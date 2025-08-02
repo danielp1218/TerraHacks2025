@@ -1,33 +1,84 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import reactLogo from '@/assets/react.svg';
 import wxtLogo from '/wxt.svg';
 import './App.css';
 
 function App() {
   const [count, setCount] = useState(0);
+  const eyeBallRef = useRef<HTMLDivElement>(null);
+  const [isSquinting, setIsSquinting] = useState(false);
+
+useEffect(() => {
+    const interval = setInterval(() => {
+      setIsSquinting(prev => !prev);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  //change to eye tracking later
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      // Get the mouse cursor's coordinates
+      const x = (event.clientX * 100) / window.innerWidth + "%";
+      const y = (event.clientY * 100) / window.innerHeight + "%";
+      
+      // Update the element's position based on the mouse coordinates
+      if (eyeBallRef.current) {
+        eyeBallRef.current.style.transition = "0s";
+        eyeBallRef.current.style.left = x;
+        eyeBallRef.current.style.top = y;
+      }
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+
+    // Cleanup function to remove the event listener
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
+
 
   return (
     <>
-      <div>
-        <a href="https://wxt.dev" target="_blank">
-          <img src={wxtLogo} className="logo" alt="WXT logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <svg width="184" height="83" viewBox="0 0 184 83" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+        <path d={isSquinting 
+          ? "M34.5 10L6 68L49.5 73.5L94.5 75L141 73L179 68L151 10H34.5Z"
+           : "M32.5 10L5 70L38.5 31.5L92.5 17L140.5 27.5L177 68L149 10H32.5Z"}
+          fill="white"
+          style={{ transition: 'all 0.5s ease-in-out' }}
+        />
+          
+        <path 
+          d={isSquinting 
+          ? "M5 68C5 68 24.4413 74.5 91.5 74.5C158.559 74.5 178 68 178 68"
+            : "M5 70C5 70 25.7542 17 92.813 17C159.872 17 178 70 178 70"
+          }
+           
+          stroke="#97D1CE" 
+          strokeWidth="10" 
+          strokeLinecap="round"
+          style={{ transition: 'all 0.5s ease-in-out' }}
+        />
+
+        <path d={isSquinting
+        ? "M92 74.0876V62" 
+        : "M92 17.0876V5"}
+         stroke="#97D1CE" 
+         stroke-width="10" 
+         stroke-linecap="round"
+         style={{ transition: 'all 0.5s ease-in-out' }}
+         />
+
+        </svg>
+
+      <div id="eye" style={{ zIndex:-1000 }}>
+        <div id="eyeBall" ref={eyeBallRef}></div>
       </div>
-      <h1>WXT + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the WXT and React logos to learn more
-      </p>
+      <h1>Eye tracker</h1>
+      
+
     </>
   );
 }

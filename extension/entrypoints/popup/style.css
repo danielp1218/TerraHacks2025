@@ -55,6 +55,37 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+#eye {
+    position: relative;
+    top: 50%;
+    left: 50%;  
+    transform: translate(-50%, -65%);
+    height: 115px;
+    width: 160px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+#eyeBall {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 60px;
+    width: 60px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 11px solid #97D1CE;
+    transition: 0;
+}
+
+
+
+.rounded-edge {
+  clip-path: ellipse(85% 100% at top);
+  height: 200px;
+  background: red;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
