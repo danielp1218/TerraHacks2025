@@ -1,8 +1,5 @@
 import {injectScript} from '#imports'
 
-interface GazeDataEvent extends Event {
-  data: any;
-}
 
 export default defineContentScript({
   matches: ['*://*.wikipedia.org/*'],
@@ -17,7 +14,8 @@ export default defineContentScript({
 
     window.addEventListener('gazeData', (event: Event) => {
       const gazeEvent = event as GazeDataEvent;
-      console.log('Gaze data received:', gazeEvent.data);
+      console.log('Gaze data received:', gazeEvent.detail);
+      
     }, false);
     
   },
