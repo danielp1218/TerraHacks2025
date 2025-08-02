@@ -1,6 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+
 :root {
-  
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  font-family: 'Josefin Sans';
   line-height: 1.5;
   font-weight: 400;
 
@@ -30,6 +32,7 @@ a:hover {
 }
 
 body {
+  font-family: 'Josefin Sans', sans-serif;
   margin: 0;
   display: flex;
   place-items: center;
@@ -42,24 +45,7 @@ h1 {
   line-height: 1.1;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
+
 
 #eye {
     position: relative;
@@ -124,6 +110,12 @@ input:checked + .slider:before {
   transform: translateX(26px);
 }
 
+input::placeholder {
+  font-family: 'Josefin Sans', sans-serif;
+  color: #D9D9D9; /* Example: Red color */
+  opacity: 1; /* Ensures full opacity in Firefox */
+}
+
 /* Rounded sliders */
 .slider {
   position: absolute;
@@ -164,6 +156,7 @@ input[type=text]:hover {
   color: white;
 }
 input[type=submit] {
+  font-family: 'Josefin Sans', sans-serif;
   background-color: white;
   color: #6EB9B6;
   padding: 12px 12px;
