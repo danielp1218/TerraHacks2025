@@ -28,6 +28,23 @@ interface GazeDataEvent extends CustomEvent {
   detail: GazeData;
 }
 
+// types for configs
+interface ElementStyle {
+  fontSize: number;
+  color: string;
+  textColor: string;
+}
+
+interface ConfigElement {
+  tag: string;
+  activationTime: number;
+  style: ElementStyle;
+}
+
+interface AppConfig {
+  config: ConfigElement[];
+}
+
 // WebGazer type definitions for global window object
 interface Window {
   webgazer?: {
@@ -36,3 +53,4 @@ interface Window {
     begin: () => any;
   };
 }
+
