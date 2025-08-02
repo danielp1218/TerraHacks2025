@@ -30,19 +30,31 @@ interface GazeDataEvent extends CustomEvent {
 
 // types for configs
 interface ElementStyle {
-  fontSize: number;
-  color: string;
-  textColor: string;
+  fontSize?: number; // in pixels
+  color?: string; // CSS color value
+  fontFamily?: string; // CSS font family
+  fontWeight?: string; // CSS font weight
+  textDecoration?: string; // CSS text decoration
+  backgroundSize?: string; // CSS background size
+  border?: string; // CSS border style
+  boxShadow?: string; // CSS box shadow
+  padding?: string; // CSS padding
+  margin?: string; // CSS margin
+  textColor?: string; // CSS text color
+  scale?: number; // CSS transform scale
+  opacity?: number; // CSS opacity
+  backgroundColor?: string; // CSS background color
+  borderRadius?: string; // CSS border radius
+
 }
 
 interface ConfigElement {
-  tag: string;
   activationTime: number;
   style: ElementStyle;
 }
 
-interface AppConfig {
-  config: ConfigElement[];
+interface ExtensionConfig {
+  [tagName: string]: ConfigElement;
 }
 
 // WebGazer type definitions for global window object

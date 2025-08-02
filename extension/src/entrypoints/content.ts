@@ -1,4 +1,5 @@
-import {injectScript} from '#imports'
+import {injectScript, storage} from '#imports'
+import { styleElement, unstyleElement } from '@/utils/styling';
 import './contentStyle.css'
 
 interface ElementWithTimestamp {
@@ -34,7 +35,9 @@ export default defineContentScript({
     let lastFiveGazeData: GazeCoordinate[] = [];
     let fiveSum = { x: 0, y: 0 };
 
-    let focusedElements: Element[] = [];
+    let focusedElements: {element: Element, style: ElementStyle}[] = [];
+
+    let config: ExtensionConfig | null = await storage.getItem('local:appConfig');
 
     ctx.addEventListener(window, 'gazeData', (event: Event) => {
       if(ctx.isInvalid) {
@@ -61,10 +64,29 @@ export default defineContentScript({
 
       const stableGazeX = fiveSum.x / lastFiveGazeData.length; // USE THIS OVER gazeX
       const stableGazeY = fiveSum.y / lastFiveGazeData.length;
-      console.log('Stable gaze coordinates:', stableGazeX, stableGazeY);
+      //console.log('Stable gaze coordinates:', stableGazeX, stableGazeY);
 
       gazeDot.style.left = `${stableGazeX}px`;
       gazeDot.style.top = `${stableGazeY}px`;
+
+      
+      const eyeGazeData = gazeEvent.detail.eyeFeatures;
+      const ratio = (eyeGazeData.left.width+eyeGazeData.right.width) / (eyeGazeData.left.height + eyeGazeData.right.height);
+      
+      const deviation = Math.abs(ratio - currentAverageEyeRatio);
+      // Update the eye ratio average
+      eyeRatioSum += ratio;
+      eyeRatioCount++;
+      currentAverageEyeRatio = eyeRatioSum / eyeRatioCount;
+
+      browser.runtime.sendMessage({
+        type: 'gazeData',
+        data: {
+          x: stableGazeX / window.innerWidth,
+          y: stableGazeY / window.innerHeight,
+          blink: (deviation > 0.4),
+        }
+      }).catch(() => {});
 
       const elementAtGaze = document.elementFromPoint(stableGazeX, stableGazeY);
       //console.log('Element at gaze coordinates:', elementAtGaze);
@@ -82,54 +104,54 @@ export default defineContentScript({
         elements.push({ timestamp: currentTime, element: elementAtGaze });
       }
       
+
+      if(config == null) {
+        console.warn('Config is null, cannot apply styles.');
+        return;
+      }
+
       if (elements.length <= 4) {
         for (const el of elements) {
-          if (!focusedElements.includes(el.element)) {
-            focusedElements.push(el.element);
-            el.element.classList.add('focused');
+          if (!focusedElements.some(focusedEl => focusedEl.element === el.element)) {
+            const tag = el.element.tagName.toLowerCase();
+            if(tag in config) {
+              const configEl: ConfigElement = config[tag];
+              if(el.timestamp < currentTime - (configEl.activationTime || 0) * 1000) {
+                // Apply the style to the element
+                styleElement(el.element as HTMLElement, configEl.style);
+              }
+
+              focusedElements.push({element: el.element, style: configEl.style});
+              el.element.classList.add('focused');
+            } else{
+              // TODO: Call gemini to add a config for this element
+              console.log("No config found for element:", tag);
+            }
           }
         }
       } else {
         // Remove 'focused' class from elements that are no longer focused
         focusedElements.forEach(el => {
-          if (!elements.some(e => e.element === el)) {
+          if (!elements.some(e => e.element === el.element)) {
             // Add a class to trigger the transition out
-            el.classList.add('unfocusing');
-            
+            unstyleElement(el.element as HTMLElement, el.style);
+            el.element.classList.add('unfocusing');
+
             // Remove classes after transition completes
             setTimeout(() => {
-              el.classList.remove('focused');
-              el.classList.remove('unfocusing');
+              el.element.classList.remove('unfocusing');
             }, 300); // Match the transition duration in CSS (0.3s)
           }
         });
-        focusedElements = focusedElements.filter(el => elements.some(e => e.element === el));
+        focusedElements = focusedElements.filter(el => elements.some(e => e.element === el.element));
       }
-
-      const eyeGazeData = gazeEvent.detail.eyeFeatures;
-      const ratio = (eyeGazeData.left.width+eyeGazeData.right.width) / (eyeGazeData.left.height + eyeGazeData.right.height);
-      
-      const deviation = Math.abs(ratio - currentAverageEyeRatio);
-      // Update the eye ratio average
-      eyeRatioSum += ratio;
-      eyeRatioCount++;
-      currentAverageEyeRatio = eyeRatioSum / eyeRatioCount;
-      //console.log('Current average eye ratio:', currentAverageEyeRatio);
-
-      // Check if the ratio deviates significantly from the average
-
-      
-      browser.runtime.sendMessage({
-        type: 'gazeData',
-        data: {
-          x: stableGazeX / window.innerWidth,
-          y: stableGazeY / window.innerHeight,
-          blink: (deviation > 0.4),
-        }
-      }).catch(() => {});
-
 
     }, false);
     
+    storage.watch('local:appConfig', (newConfig: ExtensionConfig | null) => {
+      config = newConfig;
+      console.log('Config updated:', config);
+    });
+
   },
 });

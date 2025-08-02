@@ -14,7 +14,7 @@ if (window.webgazer) {
 
   const defaultGazeDot = document.getElementById('webgazerGazeDot'); 
   if (defaultGazeDot) {
-    defaultGazeDot.remove();
+    //defaultGazeDot.remove();
   } else{
     console.warn('Default gaze dot not found, proceeding without it.');
   }
