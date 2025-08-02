@@ -1,4 +1,5 @@
 :root {
+  
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -11,6 +12,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  box-sizing: border-box;
+  display:flex;
+  align-content:center;
+  justify-content:center;
+  text-align:center;
 }
 
 a {
@@ -69,19 +76,35 @@ button:focus-visible {
     position: absolute;
     top: 50%;
     left: 50%;
-    height: 60px;
-    width: 60px;
+    height: 57px;
+    width: 57px;
     transform: translate(-50%, -50%);
     border-radius: 50%;
-    border: 11px solid #97D1CE;
+    border: 12px solid #97D1CE;
     transition: 0;
 }
 
 
 
-.rounded-edge {
-  clip-path: ellipse(85% 100% at top);
-  height: 200px;
-  background: red;
+#rounded-edge {
+  clip-path: ellipse(85% 90% at top);
+  background: white;
+  width: 100vw;
+}
+#rounded-edge-2 {
+  clip-path: ellipse(95% 90% at top);
+  background: #EEFBFA;
+  width: 100vw;
+}
+
+input[type=text] {
+  width: 95%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  color: 97D1CE;
+  box-sizing: border-box;
+  background: white;
+  border: 1px solid white;
+  border-radius: 10px;
 }
 

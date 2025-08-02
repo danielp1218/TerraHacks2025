@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import reactLogo from '@/assets/react.svg';
 import wxtLogo from '/wxt.svg';
-import './App.css';
 
 function App() {
   const eyeBallRef = useRef<HTMLDivElement>(null);
@@ -43,7 +42,11 @@ function App() {
 
   return (
     <>
-      <svg width="184" height="83" viewBox="0 0 184 83" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div id ="rounded-edge-2">
+    <div id ="rounded-edge">
+      <div style={{ padding: '25px' }}></div>
+      <svg width="184" height="83" viewBox="0 0 184 83" fill="none" xmlns="http://www.w3.org/2000/svg"
+      >
 
         <path d={isSquinting 
           ? "M34.5 10L6 68L49.5 73.5L94.5 75L141 73L179 68L151 10H34.5Z"
@@ -59,7 +62,7 @@ function App() {
           }
            
           stroke="#97D1CE" 
-          strokeWidth="10" 
+          strokeWidth="11" 
           strokeLinecap="round"
           style={{ transition: 'all 0.5s ease-in-out' }}
         />
@@ -68,8 +71,8 @@ function App() {
         ? "M92 74.0876V62" 
         : "M92 17.0876V5"}
          stroke="#97D1CE" 
-         stroke-width="10" 
-         stroke-linecap="round"
+         strokeWidth="11" 
+         strokeLinecap="round"
          style={{ transition: 'all 0.5s ease-in-out' }}
          />
 
@@ -78,7 +81,14 @@ function App() {
       <div id="eye" style={{ zIndex:-1000 }}>
         <div id="eyeBall" ref={eyeBallRef}></div>
       </div>
-      <h1>Eye tracker</h1>
+      </div>
+      <div style={{ padding: '20px' }}></div>
+      </div>
+        <h1>I</h1>
+      
+      <form>
+        <input placeholder="Enter issue here..." type="text" id="fname" name="fname"></input>
+      </form>
       
 
     </>
