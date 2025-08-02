@@ -82,19 +82,7 @@ function App() {
       </div>
       <div style={{ padding: '20px' }}></div>
       </div>
-      <div className="content">
-         www gwwwb www  wbrbsrbrn
-         rsbdnryndrny
-         ndyndtyndndt n
-         dtndtntndnyf tdnyntndnd
-         tdnyntdntndf fdtyndtntdndty
-         dtndtndtndndfv drthrrdthrdth
-         drthdrhtdrhdrthrdh drdrhdrdhdrhd df jgdo
-         difgodiri driidrjb drijbdorib ribdribdrib drib drijbdorib 
-         drdrbijdoibj dirjbdrbjdi ibdribrdbj drijbribjdrb dirjbdrbjdi 
-          dijbdrijbi dijbrdibribj ibdribj idb irib irbijribjrdijbrijbld
-           drbibjdrijbldrjlri riblriblrbjlij rdijbrdlbjdri
-      </div>
+      <div className="content"></div>
       <div style={{ padding: '5px' }}></div>
       <form>
         <input placeholder="Enter issue here..." type="text" id="fname" name="fname"></input>
@@ -105,7 +93,7 @@ function App() {
           <input type="checkbox"></input>
           <span className="slider"></span>
         </label>
-        <a style={{ float: 'right', marginRight: '10px' , marginTop: '10px', color: '#6EB9B6'}}>Demo Mode</a>
+        <a style={{ float: 'right', marginRight: '10px' , marginTop: '10px', color: '#6EB9B6'}}>Debug Mode</a>
       </div>
       <div style={{ padding: '25px' }}></div>
     </>
