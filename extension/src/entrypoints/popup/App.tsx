@@ -82,13 +82,22 @@ function App() {
       </div>
       <div style={{ padding: '20px' }}></div>
       </div>
-        <h1>I</h1>
+      <div>
+         <h1>I</h1>
+      </div>
       
       <form>
         <input placeholder="Enter issue here..." type="text" id="fname" name="fname"></input>
       </form>
-      
-
+      <div>
+        <input type="submit" value="Go" style={{ marginLeft: '10px' }}></input>
+        <label className="switch" style={{ float: 'right', marginRight: '10px' }}>
+          <input type="checkbox"></input>
+          <span className="slider"></span>
+        </label>
+        <a style={{ float: 'right', marginRight: '10px' , marginTop: '5px', color: '#97D1CE'}}>Demo Mode</a>
+      </div>
+      <div style={{ padding: '25px' }}></div>
     </>
   );
 }
