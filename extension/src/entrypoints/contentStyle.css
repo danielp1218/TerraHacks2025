@@ -18,13 +18,15 @@
 }
 
 .focused {
-  font-size: 50px;
-  color: red;
-  transition: font-size 0.3s ease, color 0.3s ease;
+  font-weight:bold;
+  color: black;
+  transition: font-weight 0.3s ease, color 0.3s ease;
 }
 
 .unfocusing {
-  font-size: 16px; /* Reset to default or whatever size you want */
-  color: inherit; /* Reset to default color */
-  transition: font-size 0.3s ease, color 0.3s ease;
+  transition: font-weight 0.3s ease, color 0.3s ease;
+}
+
+.none {
+  display: none;
 }

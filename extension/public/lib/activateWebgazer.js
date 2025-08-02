@@ -11,5 +11,13 @@ if (window.webgazer) {
     window.dispatchEvent(event);
   })
   .begin();
+
+  const defaultGazeDot = document.getElementById('webgazerGazeDot'); 
+  if (defaultGazeDot) {
+    defaultGazeDot.remove();
+  } else{
+    console.warn('Default gaze dot not found, proceeding without it.');
+  }
+
   console.log('WebGazer initialized');
 }

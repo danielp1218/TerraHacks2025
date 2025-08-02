@@ -23,6 +23,7 @@ export default defineContentScript({
     await injectScript('/lib/activateWebgazer.js');
     console.log('Webgazer script loaded and activated.');
 
+
     const elements: ElementWithTimestamp[] = []; // stores elements in the last 2 seconds
     
     // Variables to track eye ratio average and deviation
@@ -58,10 +59,10 @@ export default defineContentScript({
       fiveSum.y -= lastFiveGazeData[0].y;
       lastFiveGazeData.shift(); // keep only the last 5 gaze data points
 
-      const stableGazeX = fiveSum.x / lastFiveGazeData.length;
+      const stableGazeX = fiveSum.x / lastFiveGazeData.length; // USE THIS OVER gazeX
       const stableGazeY = fiveSum.y / lastFiveGazeData.length;
-      
-      // Update the dot position to follow the gaze
+      console.log('Stable gaze coordinates:', stableGazeX, stableGazeY);
+
       gazeDot.style.left = `${stableGazeX}px`;
       gazeDot.style.top = `${stableGazeY}px`;
 
@@ -81,11 +82,12 @@ export default defineContentScript({
         elements.push({ timestamp: currentTime, element: elementAtGaze });
       }
       
-      if (elements.length == 1) {
-        // If the element is not already focused, add it
-        if (!focusedElements.includes(elements[0].element)) {
-          focusedElements.push(elements[0].element);
-          elements[0].element.classList.add('focused');
+      if (elements.length <= 4) {
+        for (const el of elements) {
+          if (!focusedElements.includes(el.element)) {
+            focusedElements.push(el.element);
+            el.element.classList.add('focused');
+          }
         }
       } else {
         // Remove 'focused' class from elements that are no longer focused
@@ -107,6 +109,7 @@ export default defineContentScript({
       const eyeGazeData = gazeEvent.detail.eyeFeatures;
       const ratio = (eyeGazeData.left.width+eyeGazeData.right.width) / (eyeGazeData.left.height + eyeGazeData.right.height);
       
+      const deviation = Math.abs(ratio - currentAverageEyeRatio);
       // Update the eye ratio average
       eyeRatioSum += ratio;
       eyeRatioCount++;
@@ -114,10 +117,16 @@ export default defineContentScript({
       //console.log('Current average eye ratio:', currentAverageEyeRatio);
 
       // Check if the ratio deviates significantly from the average
-      const deviation = Math.abs(ratio - currentAverageEyeRatio);
-      if (deviation > 0.1) { // threshold for significant deviation
-        console.warn('Significant deviation in eye ratio detected:', deviation);
-      }
+
+      
+      browser.runtime.sendMessage({
+        type: 'gazeData',
+        data: {
+          x: stableGazeX / window.innerWidth,
+          y: stableGazeY / window.innerHeight,
+          blink: (deviation > 0.4),
+        }
+      }).catch(() => {});
 
 
     }, false);

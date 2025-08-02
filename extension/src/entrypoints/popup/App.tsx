@@ -4,37 +4,39 @@ import wxtLogo from '/wxt.svg';
 import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0);
   const eyeBallRef = useRef<HTMLDivElement>(null);
   const [isSquinting, setIsSquinting] = useState(false);
 
-useEffect(() => {
-    const interval = setInterval(() => {
-      setIsSquinting(prev => !prev);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+  function clamp(num:number, min:number, max:number) {
+    return Math.max(min, Math.min(num, max));
+  }
 
   //change to eye tracking later
   useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      // Get the mouse cursor's coordinates
-      const x = (event.clientX * 100) / window.innerWidth + "%";
-      const y = (event.clientY * 100) / window.innerHeight + "%";
-      
-      // Update the element's position based on the mouse coordinates
+    const handleData = (gazeData: { x: number; y: number; blink: boolean; }) => {
+      console.log('Gaze data received:', gazeData);
+      // Get the gaze coordinates
+      const x = clamp(gazeData.x * 100, 0, 100) + "%";
+      const y = clamp(gazeData.y * 100, 0, 100) + "%";
+
+      // Update the element's position based on the gaze coordinates
       if (eyeBallRef.current) {
         eyeBallRef.current.style.transition = "0s";
         eyeBallRef.current.style.left = x;
         eyeBallRef.current.style.top = y;
       }
+      setIsSquinting(gazeData.blink);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
+    browser.runtime.onMessage.addListener((message: { type: string; data: { x: number; y: number; blink: boolean; }; }) => {
+      if (message.type === 'gazeData') {
+        handleData(message.data);
+      }
+    });
 
     // Cleanup function to remove the event listener
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
+      browser.runtime.onMessage.removeListener(handleData);
     };
   }, []);
 
