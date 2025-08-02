@@ -1,6 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import reactLogo from '@/assets/react.svg';
-import wxtLogo from '/wxt.svg';
 
 function App() {
   const eyeBallRef = useRef<HTMLDivElement>(null);
