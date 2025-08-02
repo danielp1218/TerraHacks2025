@@ -6,7 +6,7 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color: #213547;
+  color: #6EB9B6;
   background-color: #DAF2F1;
 
   font-synthesis: none;
@@ -22,14 +22,6 @@
   text-align:center;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
 
 body {
   font-family: 'Josefin Sans', sans-serif;
@@ -45,6 +37,37 @@ h1 {
   line-height: 1.1;
 }
 
+.content {
+  font-family: 'Josefin Sans', sans-serif;
+  font-size: 14px;
+  color: #6EB9B6;
+  align-content: left;
+  text-align:left;
+  padding-left: 30px;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column-reverse;
+  width: 260px;
+  height: 100px;
+  scrollbar-color: #97D1CE white;
+  scrollbar-width: thin;
+}
+.content::-webkit-scrollbar {
+  width: 5px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: white;
+  border-radius: 4px;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: #97D1CE;
+  border-radius: 4px;
+}
+.content::-webkit-scrollbar-thumb:hover {
+  background: #6EB9B6;
+}
 
 
 #eye {
@@ -142,6 +165,7 @@ input::placeholder {
 }
 
 input[type=text] {
+  font-family: 'Josefin Sans', sans-serif;
   width: 95%;
   padding: 12px 20px;
   margin: 8px 0;
@@ -153,13 +177,12 @@ input[type=text] {
 }
 input[type=text]:hover {
   border: 2px solid #97D1CE;
-  color: white;
 }
 input[type=submit] {
   font-family: 'Josefin Sans', sans-serif;
   background-color: white;
   color: #6EB9B6;
-  padding: 12px 12px;
+  padding: 11px 11px;
   border: none;
   border-radius: 50px;
   cursor: pointer;
