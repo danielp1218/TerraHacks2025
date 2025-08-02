@@ -1,0 +1,30 @@
+.highlighted {
+  outline: 2px solid blue;
+  background-color: rgba(173, 216, 230, 0.5);
+  transition: background-color 0.3s ease;
+}
+
+.gaze-dot {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgb(68, 0, 255);
+  z-index: 10000;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  transition: all 0.1s ease-out;
+}
+
+.focused {
+  font-size: 50px;
+  color: red;
+  transition: font-size 0.3s ease, color 0.3s ease;
+}
+
+.unfocusing {
+  font-size: 16px; /* Reset to default or whatever size you want */
+  color: inherit; /* Reset to default color */
+  transition: font-size 0.3s ease, color 0.3s ease;
+}

@@ -27,3 +27,12 @@ interface GazeData {
 interface GazeDataEvent extends CustomEvent {
   detail: GazeData;
 }
+
+// WebGazer type definitions for global window object
+interface Window {
+  webgazer?: {
+    setRegression: (regressionType: string) => any;
+    setGazeListener: (listener: (data: GazeData, clock: number) => void) => any;
+    begin: () => any;
+  };
+}
