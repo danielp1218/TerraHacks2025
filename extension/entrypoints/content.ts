@@ -1,5 +1,9 @@
 import {injectScript} from '#imports'
 
+interface GazeDataEvent extends Event {
+  data: any;
+}
+
 export default defineContentScript({
   matches: ['*://*.wikipedia.org/*'],
   async main(context) {
@@ -9,8 +13,12 @@ export default defineContentScript({
       keepInDom: true,
     });
     await injectScript('/lib/activateWebgazer.js');
+    console.log('Webgazer script loaded and activated.');
 
-    console.log('activateWebgazer script executed');
+    window.addEventListener('gazeData', (event: Event) => {
+      const gazeEvent = event as GazeDataEvent;
+      console.log('Gaze data received:', gazeEvent.data);
+    }, false);
     
   },
 });
