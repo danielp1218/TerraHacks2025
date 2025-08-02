@@ -3,5 +3,8 @@
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "jsx": "react-jsx"
-  }
+  },
+  "exclude": [
+    "public",
+  ]
 }
