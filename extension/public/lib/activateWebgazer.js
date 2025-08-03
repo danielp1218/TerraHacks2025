@@ -1,5 +1,5 @@
 if (window.webgazer) {
-  window.webgazer.setRegression('weightedRidge')
+  window.webgazer.setRegression('ridge')
   
   window.webgazer.setGazeListener((data, clock) => {
     const event = new CustomEvent('gazeData', { 

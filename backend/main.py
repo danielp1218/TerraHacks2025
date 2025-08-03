@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, Any, Optional
 from gemini import GeminiService
+from agent import RLAgent
 
 app = FastAPI()
 
@@ -16,6 +17,7 @@ app.add_middleware(
 )
 
 gemini_service = GeminiService()
+rl_agent = RLAgent()
 
 class ElementStyle(BaseModel):
     fontSize: Optional[int] = None
@@ -45,6 +47,14 @@ class CreateConfigRequest(BaseModel):
 class UpdateUserInfoRequest(BaseModel):
     message: str
     userInfo: Optional[Dict[str, Any]] = None
+
+class RLConfigRequest(BaseModel):
+    tag: str
+    userInfo: Optional[Dict[str, Any]] = None
+
+class FeedbackRequest(BaseModel):
+    reward: float
+    session_id: Optional[str] = None
 
 @app.post("/create_config")
 async def create_config(request: CreateConfigRequest):
@@ -87,6 +97,68 @@ async def update_user_info(request: UpdateUserInfoRequest):
 async def health_check():
     return {"status": "healthy"}
 
+@app.post("/rl_config")
+async def rl_config(request: RLConfigRequest):
+    """
+    Generate configuration using the RL agent
+    """
+    try:
+        tag = request.tag
+        userInfo = request.userInfo or {}
+        
+        # Get state from context
+        state = rl_agent.get_state_from_context(tag, userInfo)
+        
+        # Get action from RL agent
+        config = rl_agent.select_action(state)
+        
+        return ConfigElement(
+            activationTime=config.get("activationTime", 1.0),
+            style=ElementStyle(**config.get("style", {}))
+        )
+        
+    except Exception as e:
+        return {"error": str(e), "status": "failed"}
+
+@app.post("/feedback")
+async def provide_feedback(request: FeedbackRequest):
+    """
+    Provide feedback to the RL agent for training
+    """
+    try:
+        reward = request.reward
+        
+        # Update the RL agent's policy with the reward
+        rl_agent.update_policy(reward)
+        
+        return {"status": "success", "message": "Feedback received and model updated"}
+        
+    except Exception as e:
+        return {"error": str(e), "status": "failed"}
+
+@app.post("/save_model")
+async def save_model():
+    """
+    Manually trigger model saving
+    """
+    try:
+        rl_agent.save_model()
+        return {"status": "success", "message": "Model saved successfully"}
+        
+    except Exception as e:
+        return {"error": str(e), "status": "failed"}
+
 if __name__ == "__main__":
     import uvicorn
+    import signal
+    import sys
+    
+    def signal_handler(sig, frame):
+        print("\nGracefully shutting down...")
+        rl_agent.save_model()
+        sys.exit(0)
+    
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    
     uvicorn.run(app, host="0.0.0.0", port=8000)

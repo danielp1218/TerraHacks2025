@@ -6,6 +6,7 @@ interface ElementWithTimestamp {
   timestamp: number;
   element: Element;
 }
+
 let DEBUG = false;
 storage.defineItem('local:debug', {
   fallback: false,
@@ -35,7 +36,7 @@ const handleDebugChange = (debug: boolean) => {
   const gazeDot = document.getElementById('gaze-dot');
   if (debug) {
     if (defaultGazeDot) {
-      defaultGazeDot.style.opacity = '1';
+      //defaultGazeDot.style.opacity = '1';
     }
     if (webgazerVideoContainer) {
       webgazerVideoContainer.style.display = 'block';
@@ -89,7 +90,11 @@ export default defineContentScript({
 
     let focusedElements: {element: Element, style: ElementStyle}[] = [];
 
-    let config: ExtensionConfig | null = await storage.getItem('local:appConfig');
+    let config: ExtensionConfig | null = null;
+
+    storage.getItem('local:appConfig').then((appConfig) => {
+      config = appConfig as ExtensionConfig | null;
+    });
 
     ctx.addEventListener(window, 'gazeData', (event: Event) => {
       if(ctx.isInvalid) {
@@ -98,8 +103,11 @@ export default defineContentScript({
       }
       const gazeEvent = event as GazeDataEvent;
       //console.log('Gaze data received:', gazeEvent.detail);
-
+      
       const gazeData = gazeEvent.detail;
+      if (gazeData == null || gazeData.x == null || gazeData.y == null) {
+        return;
+      }
       const gazeX = gazeData.x;
       const gazeY = gazeData.y;
 
@@ -160,8 +168,7 @@ export default defineContentScript({
       }
       
 
-      if(config == null) {
-        console.warn('Config is null, cannot apply styles.');
+      if (config == null) {
         return;
       }
 
@@ -180,7 +187,12 @@ export default defineContentScript({
               el.element.classList.add('focused');
             } else{
               // TODO: Call gemini to add a config for this element
-              console.log("No config found for element:", tag);
+              browser.runtime.sendMessage({
+                type: 'updateConfig',
+                data: {
+                  tag: tag
+                }
+              }).catch(() => {});
             }
           }
         }

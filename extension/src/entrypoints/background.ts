@@ -54,10 +54,11 @@ const initStorage = async () => {
 }
 
 export default defineBackground(() => {
-  if (storage.getItem('local:appConfig') === null) {
-    initStorage();
-  }
-
+  storage.getItem('local:appConfig').then((appConfig) => {
+    if (appConfig === null) {
+      initStorage();
+    }
+  });
 
   browser.runtime.onMessage.addListener(async (message: { type: string, data: object }) => {
     if (message.type === 'updateConfig') {
