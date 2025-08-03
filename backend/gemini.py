@@ -173,11 +173,11 @@ class GeminiService:
 
             # Parse and return the updated user information
             updated_info = json.loads(response_text)
-            return json.dumps(updated_info)
+            return updated_info
             
         except (json.JSONDecodeError, Exception) as e:
             print(f"Error updating user profile: {e}")
             fallback_info = current_user_info.copy()
             fallback_info["last_feedback"] = str(message)
             fallback_info["timestamp"] = "2025-08-02"
-            return json.dumps(fallback_info)
+            return fallback_info

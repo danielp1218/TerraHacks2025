@@ -1,15 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
+import { storage } from '#imports';
 
 function App() {
   const eyeBallRef = useRef<HTMLDivElement>(null);
   const [isSquinting, setIsSquinting] = useState(false);
   const [issueText, setIssueText] = useState('');
+  const [consoleText, setConsoleText] = useState('');
+
+  async function appendConsoleText(text: string) {
+    storage.setItem('local:consoleText', (await storage.getItem('local:consoleText') || '') + text + '<br>');
+  }
 
   function clamp(num:number, min:number, max:number) {
     return Math.max(min, Math.min(num, max));
   }
 
-  //change to eye tracking later
   useEffect(() => {
     const handleData = (gazeData: { x: number; y: number; blink: boolean; }) => {
       console.log('Gaze data received:', gazeData);
@@ -32,7 +37,45 @@ function App() {
       }
     });
 
-    // Cleanup function to remove the event listener
+    storage.defineItem<string>('local:consoleText', {
+      defaultValue: '',
+    });
+
+    const initConsoleText = async () => {
+      const text = await storage.getItem<string>('local:consoleText');
+      if (text !== null && text !== undefined) {
+        setConsoleText(text);
+      } 
+    }
+    initConsoleText();
+
+    storage.watch<string>('local:consoleText', (text) => {
+      if (text) {
+        setConsoleText(text);
+      }
+    });
+
+    storage.watch('local:userInfo', (userInfo) => {
+      if (userInfo) {
+      const jsonString = JSON.stringify(userInfo);
+      // Remove all brackets, commas, quotes and newlines
+      const cleanedStr = jsonString.replace(/[{}\[\],"\n\r]/g, ' ').replace(/\s+/g, ' ').trim();
+      // Truncate to 50 characters if needed
+      const displayText = cleanedStr.length > 50 ? cleanedStr.substring(0, 47) + '...' : cleanedStr;
+      appendConsoleText("Updated user info: " + displayText);
+      }
+    });
+    storage.watch('local:createConfig', (createConfig) => {
+      if (createConfig) {
+        const jsonString = JSON.stringify(createConfig);
+        // Remove all brackets, commas, quotes and newlines
+        const cleanedStr = jsonString.replace(/[{}\[\],"\n\r]/g, ' ').replace(/\s+/g, ' ').trim();
+        // Truncate to 50 characters if needed
+        const displayText = cleanedStr.length > 50 ? cleanedStr.substring(0, 47) + '...' : cleanedStr;
+        appendConsoleText("Updated create config: " + displayText);
+      }
+    });
+
     return () => {
       browser.runtime.onMessage.removeListener(handleData);
     };
@@ -44,6 +87,7 @@ function App() {
         type: 'updateUserInfo',
         data: issueText,
       });
+      appendConsoleText("User: " + issueText);
       setIssueText('');
     }
   };
@@ -93,7 +137,7 @@ function App() {
       </div>
       <div style={{ padding: '20px' }}></div>
       </div>
-      <div className="content"></div>
+      <div className="content" dangerouslySetInnerHTML={{ __html: consoleText }}></div>
       <div style={{ padding: '5px' }}></div>
       <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
         <input placeholder="Enter issue here..." type="text" id="fname" name="fname" value={issueText} onChange={(e) => setIssueText(e.target.value)}></input>

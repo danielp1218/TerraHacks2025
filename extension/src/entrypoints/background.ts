@@ -29,7 +29,7 @@ const initStorage = async () => {
     }, 
     "preferences": { 
       "font_size": "", 
-      "contrast": "high contrast", 
+      "contrast": "", 
       "colors": [],
       "interaction_speed": "" 
     }, 
@@ -95,8 +95,7 @@ export default defineBackground(() => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        const updatedUserInfo = await response.text();
-        storage.setItem('local:userInfo', updatedUserInfo);
+        storage.setItem('local:userInfo', await response.json());
         
       });
     }
