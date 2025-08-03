@@ -6,6 +6,7 @@ function App() {
   const [isSquinting, setIsSquinting] = useState(false);
   const [issueText, setIssueText] = useState('');
   const [consoleText, setConsoleText] = useState('');
+  const [debugMode, setDebugMode] = useState(false);
 
   async function appendConsoleText(text: string) {
     storage.setItem('local:consoleText', (await storage.getItem('local:consoleText') || '') + text + '<br>');
@@ -41,6 +42,10 @@ function App() {
       defaultValue: '',
     });
 
+    storage.defineItem<boolean>('local:debug', {
+      defaultValue: false,
+    });
+
     const initConsoleText = async () => {
       const text = await storage.getItem<string>('local:consoleText');
       if (text !== null && text !== undefined) {
@@ -49,9 +54,23 @@ function App() {
     }
     initConsoleText();
 
+    const initDebugMode = async () => {
+      const debug = await storage.getItem<boolean>('local:debug');
+      if (debug !== null && debug !== undefined) {
+        setDebugMode(debug);
+      }
+    }
+    initDebugMode();
+
     storage.watch<string>('local:consoleText', (text) => {
       if (text) {
         setConsoleText(text);
+      }
+    });
+
+    storage.watch<boolean>('local:debug', (debug) => {
+      if (debug !== null && debug !== undefined) {
+        setDebugMode(debug);
       }
     });
 
@@ -90,6 +109,12 @@ function App() {
       appendConsoleText("User: " + issueText);
       setIssueText('');
     }
+  };
+
+  const handleDebugToggle = () => {
+    const newDebugMode = !debugMode;
+    setDebugMode(newDebugMode);
+    storage.setItem('local:debug', newDebugMode);
   };
 
 
@@ -145,7 +170,7 @@ function App() {
       <div>
         <input type="submit" value="Go" style={{ marginLeft: '10px' }} onClick={handleSubmit}></input>
         <label className="switch" style={{ float: 'right', marginRight: '10px' }}>
-          <input type="checkbox"></input>
+          <input type="checkbox" checked={debugMode} onChange={handleDebugToggle}></input>
           <span className="slider"></span>
         </label>
         <a style={{ float: 'right', marginRight: '10px' , marginTop: '10px', color: '#6EB9B6'}}>Debug Mode</a>

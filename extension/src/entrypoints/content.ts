@@ -6,6 +6,55 @@ interface ElementWithTimestamp {
   timestamp: number;
   element: Element;
 }
+let DEBUG = false;
+storage.defineItem('local:debug', {
+  fallback: false,
+  init: () => {
+    return false;
+  }
+});
+storage.getItem('local:debug').then((debug) => {
+  if (debug !== undefined && debug !== null) {
+    handleDebugChange(debug === true);
+  }
+}).catch(() => {
+  console.warn('Failed to get debug setting, defaulting to false.');
+  handleDebugChange(false);
+});
+
+storage.watch('local:debug', (newDebug) => {
+    if (newDebug !== undefined && newDebug !== null) {
+        handleDebugChange(newDebug === true);
+    }
+});
+
+const handleDebugChange = (debug: boolean) => {
+  DEBUG = debug;
+  const defaultGazeDot = document.getElementById('webgazerGazeDot'); 
+  const webgazerVideoContainer = document.getElementById('webgazerVideoContainer'); 
+  const gazeDot = document.getElementById('gaze-dot');
+  if (debug) {
+    if (defaultGazeDot) {
+      defaultGazeDot.style.opacity = '1';
+    }
+    if (webgazerVideoContainer) {
+      webgazerVideoContainer.style.display = 'block';
+    }
+    if (gazeDot) {
+      gazeDot.style.display = 'block';
+    }
+  } else {
+    if (defaultGazeDot) {
+      defaultGazeDot.style.opacity = '0';
+    }
+    if (webgazerVideoContainer) {
+      webgazerVideoContainer.style.display = 'none';
+    }
+    if (gazeDot) {
+      gazeDot.style.display = 'none';
+    }
+  }
+};
 
 export default defineContentScript({
   matches: ['*://*.wikipedia.org/*'],
@@ -16,15 +65,18 @@ export default defineContentScript({
     // Create a dot element that will follow the gaze
     const gazeDot = document.createElement('div');
     gazeDot.className = 'gaze-dot';
+    gazeDot.id = 'gaze-dot';
     document.body.appendChild(gazeDot);
     
     await injectScript('/lib/webgazer.js', {
       keepInDom: true,
     });
+
     await injectScript('/lib/activateWebgazer.js');
     console.log('Webgazer script loaded and activated.');
-
-
+    setTimeout(() => {
+    handleDebugChange(DEBUG);
+    }, 2000);
     const elements: ElementWithTimestamp[] = []; // stores elements in the last 2 seconds
     
     // Variables to track eye ratio average and deviation
@@ -92,6 +144,7 @@ export default defineContentScript({
       //console.log('Element at gaze coordinates:', elementAtGaze);
       const currentTime = Date.now();
 
+
       for (let i = elements.length - 1; i >= 0; i--) {
         if (currentTime - elements[i].timestamp > 2000) {
           elements[i].element.classList.remove('highlighted');
@@ -99,9 +152,11 @@ export default defineContentScript({
         }
       }
 
-      if (elementAtGaze && !elements.some(el => el.element === elementAtGaze)) {
-        elementAtGaze.classList.add('highlighted');
-        elements.push({ timestamp: currentTime, element: elementAtGaze });
+      if (DEBUG) {
+        if (elementAtGaze && !elements.some(el => el.element === elementAtGaze)) {
+          elementAtGaze.classList.add('highlighted');
+          elements.push({ timestamp: currentTime, element: elementAtGaze });
+        }
       }
       
 
