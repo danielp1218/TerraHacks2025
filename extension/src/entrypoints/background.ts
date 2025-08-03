@@ -97,7 +97,23 @@ export default defineBackground(() => {
           throw new Error('Network response was not ok');
         }
         storage.setItem('local:userInfo', await response.json());
-        
+        const config = await storage.getItem('local:appConfig');
+        fetch(`${backendUrl}/update_whole_config`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userInfo: userInfo,
+            config: config
+          })
+        }).then(async (response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const updatedConfig = await response.json();
+          storage.setItem('local:appConfig', updatedConfig);
+        });
       });
     }
   })

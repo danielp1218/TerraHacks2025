@@ -56,6 +56,10 @@ class FeedbackRequest(BaseModel):
     reward: float
     session_id: Optional[str] = None
 
+class UpdateWholeConfigRequest(BaseModel):
+    userInfo: Dict[str, Any]
+    config: Dict[str, Any]
+
 @app.post("/create_config")
 async def create_config(request: CreateConfigRequest):
     """
@@ -89,6 +93,23 @@ async def update_user_info(request: UpdateUserInfoRequest):
         updated_info = gemini_service.update_user_profile(message, current_user_info)
         
         return updated_info
+        
+    except Exception as e:
+        return {"error": str(e), "status": "failed"}
+
+@app.post("/update_whole_config")
+async def update_whole_config(request: UpdateWholeConfigRequest):
+    """
+    Update the entire configuration based on updated user information
+    """
+    try:
+        user_info = request.userInfo
+        current_config = request.config
+        
+        # Update the entire configuration using Gemini service
+        updated_config = gemini_service.update_whole_config(user_info, current_config)
+        
+        return updated_config
         
     except Exception as e:
         return {"error": str(e), "status": "failed"}

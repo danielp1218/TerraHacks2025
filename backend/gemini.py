@@ -181,3 +181,80 @@ class GeminiService:
             fallback_info["last_feedback"] = str(message)
             fallback_info["timestamp"] = "2025-08-02"
             return fallback_info
+
+    @staticmethod
+    def update_whole_config(user_info: Dict[str, Any], current_config: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Update the entire configuration based on updated user information
+        """
+        
+        print("Updating whole config with user info:", json.dumps(user_info, indent=2))
+        print("Current config:", json.dumps(current_config, indent=2))
+        
+        prompt = f"""
+        You are an accessibility expert assistant. Based on the updated user information, please regenerate and optimize the entire configuration for all HTML elements.
+        
+        Updated User Information: {json.dumps(user_info, indent=2)}
+        Current Configuration: {json.dumps(current_config, indent=2)}
+        
+        Please analyze the user's accessibility needs and preferences and update the configuration for ALL elements accordingly. 
+        
+        Consider:
+        - Visual impairments and contrast needs
+        - Motor disabilities and interaction preferences  
+        - Cognitive preferences and timing needs
+        - Any feedback patterns or successful configurations
+        - Consistency across different element types
+        
+        Return ONLY valid JSON representing the complete updated configuration in the same structure as the current config.
+        Each element should have:
+        - activationTime: float (0.1 to 2.0)
+        - style: object with appropriate styling properties
+        
+        The configuration should maintain the same element tags as the current config but with optimized values.
+        
+        Example structure:
+        {{
+            "div": {{
+                "activationTime": 1.0,
+                "style": {{
+                    "scale": 1.2,
+                    "color": "#000000",
+                    "textColor": "#FFFFFF"
+                }}
+            }},
+            "p": {{
+                "activationTime": 0.5,
+                "style": {{
+                    "fontSize": 16,
+                    "color": "#000000",
+                    "textColor": "#FFFFFF"
+                }}
+            }}
+        }}
+        """
+        
+        try:
+            print("Gemini prompt for whole config:", prompt)
+            # Generate response from Gemini
+            response = model.generate_content(prompt)
+            response.resolve()
+            print("Gemini response for whole config:", response.text)
+
+            # Save response to debug file
+            debug_dir = "./debug"
+            os.makedirs(debug_dir, exist_ok=True)
+            with open(f"{debug_dir}/gemini_response_whole_config_{time()}.txt", "w") as f:
+                f.write(f"Prompt:\n{prompt}\n\nResponse:\n{response.text}")
+
+            # Extract JSON from markdown code block if present
+            response_text = GeminiService._extract_json_from_response(response.text)
+
+            # Parse and return the updated configuration
+            updated_config = json.loads(response_text)
+            return updated_config
+            
+        except (json.JSONDecodeError, Exception) as e:
+            print(f"Error updating whole config: {e}")
+            # Return the current config as fallback
+            return current_config
