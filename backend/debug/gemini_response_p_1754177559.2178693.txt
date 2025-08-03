@@ -1,0 +1,78 @@
+Prompt:
+
+        You are an accessibility expert assistant. Generate an optimal configuration for the HTML tag "p" based on the following user information:
+
+        User Information: {
+  "accessibility_needs": {
+    "visual": [
+      ""
+    ],
+    "motor": [
+      ""
+    ],
+    "cognitive": [
+      "dyslexia"
+    ]
+  },
+  "preferences": {
+    "font_size": "",
+    "contrast": "",
+    "colors": [
+      ""
+    ],
+    "interaction_speed": ""
+  },
+  "feedback_history": [
+    {
+      "timestamp": "2024-07-30",
+      "feedback": "User stated they have dyslexia.",
+      "sentiment": "neutral"
+    }
+  ],
+  "successful_configs": {}
+}
+
+        Please generate a JSON configuration that includes:
+        1. activationTime: A float value (0.1 to 2.0) representing how quickly the accessibility enhancement should activate
+        2. style: An object with styling properties that improve accessibility for this user
+        
+        Consider factors like:
+        - Visual impairments (if mentioned)
+        - Motor disabilities (if mentioned)
+        - Cognitive preferences (if mentioned)
+        - Previous feedback or preferences
+        
+        The style object can include properties like:
+        - fontSize (integer, in pixels)
+        - color (hex color string)
+        - backgroundColor (hex color string)
+        - scale (float, 1.0 = normal size)
+        - textColor (hex color string)
+        - borderRadius (string with CSS units)
+        - padding (string with CSS units)
+        - margin (string with CSS units)
+        
+        Return ONLY valid JSON in this exact format:
+        {
+            "activationTime": 0.8,
+            "style": {
+                "fontSize": 18,
+                "color": "#000000",
+                "backgroundColor": "#ffffff",
+                "scale": 1.2
+            }
+        }
+        
+
+Response:
+```json
+{
+  "activationTime": 0.8,
+  "style": {
+    "fontSize": 18,
+    "color": "#000000",
+    "backgroundColor": "#ffffff",
+    "scale": 1.2
+  }
+}
+```

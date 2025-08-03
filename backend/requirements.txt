@@ -1,1 +1,6 @@
 torch
+fastapi
+uvicorn[standard]
+pydantic
+numpy
+google-generativeai

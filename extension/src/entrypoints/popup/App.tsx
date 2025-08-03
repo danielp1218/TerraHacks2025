@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 function App() {
   const eyeBallRef = useRef<HTMLDivElement>(null);
   const [isSquinting, setIsSquinting] = useState(false);
+  const [issueText, setIssueText] = useState('');
 
   function clamp(num:number, min:number, max:number) {
     return Math.max(min, Math.min(num, max));
@@ -36,6 +37,16 @@ function App() {
       browser.runtime.onMessage.removeListener(handleData);
     };
   }, []);
+
+  const handleSubmit = () => {
+    if (issueText.trim()) {
+      browser.runtime.sendMessage({
+        type: 'updateUserInfo',
+        data: issueText,
+      });
+      setIssueText('');
+    }
+  };
 
 
   return (
@@ -84,11 +95,11 @@ function App() {
       </div>
       <div className="content"></div>
       <div style={{ padding: '5px' }}></div>
-      <form>
-        <input placeholder="Enter issue here..." type="text" id="fname" name="fname"></input>
+      <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+        <input placeholder="Enter issue here..." type="text" id="fname" name="fname" value={issueText} onChange={(e) => setIssueText(e.target.value)}></input>
       </form>
       <div>
-        <input type="submit" value="Go" style={{ marginLeft: '10px' }}></input>
+        <input type="submit" value="Go" style={{ marginLeft: '10px' }} onClick={handleSubmit}></input>
         <label className="switch" style={{ float: 'right', marginRight: '10px' }}>
           <input type="checkbox"></input>
           <span className="slider"></span>
