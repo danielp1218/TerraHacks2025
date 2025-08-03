@@ -66,6 +66,7 @@ async def create_config(request: CreateConfigRequest):
     Generate optimized configuration for a specific HTML tag using Gemini AI
     based on user knowledge and the HTML tag context
     """
+    return {"status": "success", "message": "This endpoint is deprecated. Use /generate_config instead."}
     try:
         tag = request.tag
         userInfo = request.userInfo or {}

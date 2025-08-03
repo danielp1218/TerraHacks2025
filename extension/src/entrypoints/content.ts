@@ -144,7 +144,7 @@ export default defineContentScript({
         data: {
           x: stableGazeX / window.innerWidth,
           y: stableGazeY / window.innerHeight,
-          blink: (deviation > 0.4),
+          blink: (deviation > 0.3),
         }
       }).catch(() => {});
 
@@ -160,11 +160,11 @@ export default defineContentScript({
         }
       }
 
-      if (DEBUG) {
-        if (elementAtGaze && !elements.some(el => el.element === elementAtGaze)) {
-          elementAtGaze.classList.add('highlighted');
-          elements.push({ timestamp: currentTime, element: elementAtGaze });
+      if (elementAtGaze && !elements.some(el => el.element === elementAtGaze)) {
+        if (DEBUG) {
+            elementAtGaze.classList.add('highlighted');
         }
+        elements.push({ timestamp: currentTime, element: elementAtGaze });
       }
       
 
@@ -184,7 +184,7 @@ export default defineContentScript({
               }
 
               focusedElements.push({element: el.element, style: configEl.style});
-              el.element.classList.add('focused');
+              el.element.classList.add('unfocusing');
             } else{
               // TODO: Call gemini to add a config for this element
               browser.runtime.sendMessage({
